@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حلم الكابي دون - BL Visual Novel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 900px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 240, 255, 0.95) 100%);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 90vh;
+            max-height: 900px;
+        }
+
+        .game-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .game-header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .game-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .visual-scene {
+            flex: 1;
+            display: flex;
+            gap: 20px;
+            padding: 30px;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(255, 200, 200, 0.2) 0%, rgba(200, 220, 255, 0.2) 100%);
+            min-height: 250px;
+        }
+
+        .character {
+            text-align: center;
+            transition: all 0.6s ease;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .character.hidden {
+            opacity: 0;
+            transform: scale(0.8);
+            pointer-events: none;
+        }
+
+        .character-name {
+            font-weight: bold;
+            color: #667eea;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .character-image {
+            width: 150px;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            word-break: break-word;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .hiroshi-image {
+            background: linear-gradient(135deg, #d4a574 0%, #a0662f 100%);
+        }
+
+        .nakamura-image {
+            background: linear-gradient(135deg, #2c3e50 0%, #1a1f2a 100%);
+        }
+
+        .scene-transition {
+            animation: fadeIn 0.8s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .dialogue-box {
+            background: white;
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .dialogue-speaker {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .dialogue-text {
+            color: #333;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        .dialogue-text-ar {
+            font-size: 14px;
+            color: #666;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #eee;
+        }
+
+        .choices-container {
+            padding: 20px 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .choice-btn {
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            text-align: right;
+            direction: rtl;
+        }
+
+        .choice-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        .choice-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .choice-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .skip-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            border: none;
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .skip-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .game-status {
+            padding: 15px 30px;
+            background: #f5f5f5;
+            border-top: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .progress-bar {
+            width: 150px;
+            height: 6px;
+            background: #ddd;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .relationship-meter {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .heart {
+            color: #f5576c;
+            font-size: 16px;
+        }
+
+        .end-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .end-screen.show {
+            display: flex;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .end-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .end-content h2 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .end-content p {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .end-content .ar-text {
+            font-size: 14px;
+            color: #999;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .restart-btn {
+            margin-top: 25px;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .restart-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .narration {
+            color: #764ba2;
+            font-style: italic;
+            text-align: center;
+            padding: 15px;
+            background: rgba(118, 75, 162, 0.05);
+            border-radius: 8px;
+            margin: 0 30px;
+        }
+
+        @media (max-width: 768px) {
+            .visual-scene {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .character-image {
+                width: 120px;
+                height: 160px;
+            }
+
+            .game-header h1 {
+                font-size: 22px;
+            }
+
+            .dialogue-text {
+                font-size: 14px;
+            }
+
+            .choice-btn {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="skip-btn" onclick="skipToEnd()">⏭️ تخطي</button>
+
+    <div class="game-container">
+        <div class="game-header">
+            <h1>حلم الكابي دون</h1>
+            <p>قصة حب بين هيروشي و ناكامورا</p>
+        </div>
+
+        <div class="game-content">
+            <div class="visual-scene" id="visualScene">
+                <div class="character" id="hiroshi">
+                    <div class="character-image hiroshi-image">🧑‍💼<br>هيروشي<br>(شعر بني)</div>
+                    <div class="character-name">Hiroshi</div>
+                </div>
+                <div class="character" id="nakamura">
+                    <div class="character-image nakamura-image">🧑‍💼<br>ناكامورا<br>(شعر أسود)</div>
+                    <div class="character-name">Nakamura</div>
+                </div>
+            </div>
+
+            <div id="narratorBox" class="narration"></div>
+            <div id="dialogueBox" class="dialogue-box"></div>
+            <div id="choicesContainer" class="choices-container"></div>
+        </div>
+
+        <div class="game-status">
+            <div>
+                <div>المشهد: <span id="sceneNumber">0</span>/7</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+            <div>
+                <div>مشاعر ناكامورا تجاه هيروشي:</div>
+                <div class="relationship-meter" id="relationshipMeter"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="end-screen" id="endScreen">
+        <div class="end-content">
+            <h2 id="endTitle"></h2>
+            <p id="endMessage"></p>
+            <p class="ar-text" id="endMessageAr"></p>
+            <button class="restart-btn" onclick="location.reload()">🔄 إعادة تشغيل</button>
+        </div>
+    </div>
+
+    <script>
+        const storyData = [
+            {
+                scene: 0,
+                narrator: "في صباح يوم عادي في المكتب...",
+                speaker: "ناكامورا",
+                dialogue: "I had a dream where you did a kabe-don to me...",
+                arDialogue: "رأيت حلماً تضغط فيه علي بظهري على الجدار...",
+                characters: ['hiroshi', 'nakamura'],
+                choices: [
+                    { text: 'ما هذا؟ لماذا تقول هذا الآن؟', next: 1 },
+                    { text: 'اضحك بخفة وغير الموضوع', next: 2 }
+                ]
+            },
+            {
+                scene: 1,
+                narrator: "هيروشي يبدو مندهشاً ومرتبكاً...",
+                speaker: "هيروشي",
+                dialogue: "W-What?! Why would you say something like that?!",
+                arDialogue: "م-ماذا؟! لماذا تقول شيئاً كهذا؟!",
+                characters: ['hiroshi', 'nakamura'],
+                choices: [
+                    { text: 'الاقتراب أكثر من ناكامورا', next: 3 },
+                    { text: 'تجنب النظر في عينيه', next: 4 }
+                ]
+            },
+            {
+                scene: 2,
+                narrator: "هيروشي يحاول تغيير الموضوع بخفة...",
+                speaker: "هيروشي",
+                dialogue: "Haha... you watch too much anime. Let's get back to work.",
+                arDialogue: "هاها... أنت تشاهد الكثير من الأنمي. دعنا نعود للعمل.",
+                characters: ['hiroshi'],
+                choices: [
+                    { text: 'الالتفات للعودة إلى مكتبك', next: 5 },
+                    { text: 'لمح نظرة حزينة في عيني ناكامورا', next: 6 }
+                ]
+            },
+            {
+                scene: 3,
+                narrator: "هيروشي يقترب من ناكامورا، قلبه يخفق...",
+                speaker: "هيروشي",
+                dialogue: "You... why are you saying such things to me?",
+                arDialogue: "أنت... لماذا تقول لي أشياء كهذه؟",
+                characters: ['hiroshi', 'nakamura'],
+                choices: [
+                    { text: 'اسأل عن سبب الحلم الغريب', next: 7 },
+                    { text: 'اعترف برغبة سرية', next: 8 }
+                ]
+            },
+            {
+                scene: 4,
+                narrator: "ناكامورا يبتعد، حزيناً لأن هيروشي لا يفهم...",
+                speaker: "ناكامورا",
+                dialogue: "Never mind... forget I said anything.",
+                arDialogue: "لا تهتم... انسَ أنني قلت أي شيء.",
+                characters: ['nakamura'],
+                choices: [
+                    { text: 'اتبعه والتماس الاعتذار', next: 9 },
+                    { text: 'دعه يرحل وحيداً', next: 10 }
+                ]
+            },
+            {
+                scene: 5,
+                narrator: "هيروشي ينسحب للعمل، لكنه مشغول البال...",
+                speaker: "الراوي",
+                dialogue: "He couldn't focus on work for the rest of the day...",
+                arDialogue: "لم يستطع التركيز على العمل لبقية اليوم...",
+                characters: [],
+                choices: [
+                    { text: 'استراحة الغداء - فرصة للحديث', next: 11 }
+                ]
+            },
+            {
+                scene: 6,
+                narrator: "هيروشي يرى الحزن في عيني ناكامورا...",
+                speaker: "هيروشي (بصوت أهدأ)",
+                dialogue: "Wait... you actually meant that, didn't you?",
+                arDialogue: "انتظر... أنت فعلاً تعني هذا، أليس كذلك؟",
+                characters: ['hiroshi', 'nakamura'],
+                choices: [
+                    { text: 'اعترف بمشاعره الحقيقية', next: 12 },
+                    { text: 'تردد وخافت', next: 13 }
+                ]
+            },
+            {
+                scene: 7,
+                narrator: "اللحظة الحرجة عندما يسأل هيروشي عن الحقيقة...",
+                speaker: "هيروشي",
+                dialogue: "Tell me the truth... do you really feel that way about me?",
+                arDialogue: "قل لي الحقيقة... هل تشعر حقاً بهذا تجاهي؟",
+                characters: ['hiroshi', 'nakamura'],
+                choices: [
+                    { text: 'ناكامورا يعترف بحبه الحقيقي', next: 14 },
+                    { text: 'ناكامورا ينكر كل شيء', next: 15 }
+                ]
+            }
+        ];
+
+        const endingData = {
+            14: {
+                title: "💕 النهاية الحقيقية 💕",
+                message: "Nakamura finally confessed his true feelings to Hiroshi. Though Hiroshi was surprised, he realized his heart had been drawn to Nakamura all along. Their relationship blossomed from that moment.",
+                ar: "أخيراً اعترف ناكامورا برغباته الحقيقية إلى هيروشي. على الرغم من دهشة هيروشي، أدرك أن قلبه كان منجذباً لناكامورا طوال الوقت. ازدهرت علاقتهما من تلك اللحظة فصاعداً."
+            },
+            15: {
+                title: "💔 النهاية الحزينة 💔",
+                message: "Nakamura denied everything, unable to confess his true feelings. Hiroshi was left confused, and they both carried their unspoken love in their hearts forever.",
+                ar: "أنكر ناكامورا كل شيء، غير قادر على الاعتراف برغباته الحقيقية. تُرك هيروشي في حيرة، وحمل كلاهما حبهما الصامت في قلبيهما إلى الأبد."
+            },
+            10: {
+                title: "😔 النهاية المؤلمة 😔",
+                message: "Hiroshi let Nakamura leave alone. This decision would haunt him forever, as he never got the chance to understand what Nakamura truly meant.",
+                ar: "ترك هيروشي ناكامورا يرحل وحيداً. كان هذا القرار سيطارده إلى الأبد، لأنه لم يحصل على فرصة لفهم ما كان يقصده ناكامورا حقاً."
+            },
+            9: {
+                title: "🌸 النهاية الأمل 🌸",
+                message: "Hiroshi followed Nakamura and finally had the conversation that changed everything. Though the path ahead was uncertain, their bond grew stronger.",
+                ar: "اتبع هيروشي ناكامورا وأخيراً أتيحت لهما فرصة الحديث الذي غير كل شيء. على الرغم من عدم اليقين في المستقبل، أصبحت رابطتهما أقوى."
+            }
+        };
+
+        let currentScene = 0;
+        let relationshipLevel = 0;
+        let visited = new Set([0]);
+
+        function showScene(sceneIndex) {
+            if (sceneIndex >= storyData.length) {
+                showEnding(sceneIndex);
+                return;
+            }
+
+            const scene = storyData[sceneIndex];
+            currentScene = sceneIndex;
+            visited.add(sceneIndex);
+
+            // Update progress
+            updateProgress();
+
+            // Hide all characters
+            document.querySelectorAll('.character').forEach(c => c.classList.add('hidden'));
+
+            // Show relevant characters
+            scene.characters.forEach(charId => {
+                const char = document.getElementById(charId);
+                if (char) {
+                    char.classList.remove('hidden');
+                }
+            });
+
+            // Update narrator
+            const narratorBox = document.getElementById('narratorBox');
+            if (scene.narrator) {
+                narratorBox.textContent = scene.narrator;
+                narratorBox.style.display = 'block';
+            } else {
+                narratorBox.style.display = 'none';
+            }
+
+            // Update dialogue
+            const dialogueBox = document.getElementById('dialogueBox');
+            if (scene.speaker && scene.dialogue) {
+                dialogueBox.innerHTML = `
+                    <div class="dialogue-speaker">${scene.speaker}</div>
+                    <div class="dialogue-text">${scene.dialogue}</div>
+                    <div class="dialogue-text-ar">${scene.arDialogue}</div>
+                `;
+            }
+
+            // Update choices
+            const choicesContainer = document.getElementById('choicesContainer');
+            choicesContainer.innerHTML = '';
+
+            if (scene.choices) {
+                scene.choices.forEach(choice => {
+                    const btn = document.createElement('button');
+                    btn.className = 'choice-btn';
+                    btn.textContent = choice.text;
+                    btn.onclick = () => {
+                        relationshipLevel++;
+                        showScene(choice.next);
+                    };
+                    choicesContainer.appendChild(btn);
+                });
+            }
+
+            // Update scene number
+            document.getElementById('sceneNumber').textContent = visited.size;
+        }
+
+        function updateProgress() {
+            const progress = (currentScene / 7) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+
+            // Update hearts
+            const meter = document.getElementById('relationshipMeter');
+            meter.innerHTML = '';
+            for (let i = 0; i < 5; i++) {
+                const heart = document.createElement('span');
+                heart.className = 'heart';
+                heart.textContent = i < relationshipLevel ? '💕' : '🤍';
+                meter.appendChild(heart);
+            }
+        }
+
+        function showEnding(endingId) {
+            const ending = endingData[endingId];
+            if (ending) {
+                document.getElementById('endTitle').textContent = ending.title;
+                document.getElementById('endMessage').textContent = ending.message;
+                document.getElementById('endMessageAr').textContent = ending.ar;
+                document.getElementById('endScreen').classList.add('show');
+            }
+        }
+
+        function skipToEnd() {
+            relationshipLevel = 3;
+            showScene(14);
+        }
+
+        // Start the game
+        showScene(0);
+    </script>
+</body>
+</html>
